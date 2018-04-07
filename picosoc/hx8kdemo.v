@@ -42,15 +42,16 @@ module hx8kdemo (
 	output debug_flash_io2,
 	output debug_flash_io3
 );
-	wire clk_pll;
+	wire clk_pll, locked;
 
 	pll pll (
 		.clock_in (clk),
-		.clock_out(clk_pll)
+		.clock_out(clk_pll),
+		.locked   (locked)
 	);
 
 	reg [5:0] reset_cnt = 0;
-	wire resetn = &reset_cnt;
+	wire resetn = &reset_cnt & locked;
 
 	always @(posedge clk_pll) begin
 		reset_cnt <= reset_cnt + !resetn;
