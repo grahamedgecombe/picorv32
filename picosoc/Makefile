@@ -7,10 +7,10 @@ hx8ksim: hx8kdemo_tb.vvp firmware.hex
 hx8ksynsim: hx8kdemo_syn_tb.vvp firmware.hex
 	vvp -N $<
 
-hx8kdemo.blif: hx8kdemo.v spimemio.v simpleuart.v picosoc.v ../picorv32.v
+hx8kdemo.blif: hx8kdemo.v pll.v spimemio.v simpleuart.v picosoc.v ../picorv32.v
 	yosys -ql hx8kdemo.log -p 'synth_ice40 -top hx8kdemo -blif hx8kdemo.blif' $^
 
-hx8kdemo_tb.vvp: hx8kdemo_tb.v hx8kdemo.v spimemio.v simpleuart.v picosoc.v ../picorv32.v spiflash.v
+hx8kdemo_tb.vvp: hx8kdemo_tb.v hx8kdemo.v pll.v spimemio.v simpleuart.v picosoc.v ../picorv32.v spiflash.v
 	iverilog -s testbench -o $@ $^ `yosys-config --datdir/ice40/cells_sim.v`
 
 hx8kdemo_syn_tb.vvp: hx8kdemo_tb.v hx8kdemo_syn.v spiflash.v
@@ -23,7 +23,7 @@ hx8kdemo.asc: hx8kdemo.pcf hx8kdemo.blif
 	arachne-pnr -d 8k -o hx8kdemo.asc -p hx8kdemo.pcf hx8kdemo.blif
 
 hx8kdemo.bin: hx8kdemo.asc
-	icetime -d hx8k -c 12 -mtr hx8kdemo.rpt hx8kdemo.asc
+	icetime -d hx8k -c 24 -mtr hx8kdemo.rpt hx8kdemo.asc
 	icepack hx8kdemo.asc hx8kdemo.bin
 
 hx8kprog: hx8kdemo.bin firmware.bin
